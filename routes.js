@@ -1,5 +1,9 @@
 const express = require("express");
 const axios = require("axios");
+//const db = require("./db");
+const User = require("./models/User");
+const middleware = require("./middleware");
+const { NotFoundError } = require("./expressError");
 const router = new express.Router();
 const BASE_URL_WORKOUT = "https://api-workout-sq1f.onrender.com/api/workout";
 
@@ -60,6 +64,18 @@ router.get("/videos/:name", async (req, res, next) => {
       throw new NotFoundError("No videos found");
     }
     return res.status(200).json(resVideos.data.videos);
+  } catch (err) {
+    return next(err);
+  }
+});
+
+//test db
+router.get("/users", middleware.allowThis, async function (req, res, next) {
+  try {
+    //const results = await db.query(`SELECT * FROM users`);
+    //return res.json(results.rows);
+    let users = await User.getUsers();
+    return res.json(users);
   } catch (err) {
     return next(err);
   }
