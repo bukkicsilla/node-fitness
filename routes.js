@@ -87,6 +87,15 @@ router.get("/users", middleware.allowThis, async function (req, res, next) {
   }
 });
 
+router.get("/users/:username", async function (req, res, next) {
+  try {
+    const user = await User.getUser(req.params.username);
+    return res.json(user);
+  } catch (err) {
+    return next(err);
+  }
+});
+
 //authorization
 router.post("/register", async function (req, res, next) {
   try {

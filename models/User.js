@@ -23,5 +23,19 @@ class User {
     );
     return users;
   }
+  static async getUser(username) {
+    const results = await db.query(`SELECT * FROM users WHERE username = $1`, [
+      username,
+    ]);
+    const user = results.rows[0];
+    return new User(
+      user.id,
+      user.username,
+      user.password,
+      user.email,
+      user.first_name,
+      user.last_name
+    );
+  }
 }
 module.exports = User;
