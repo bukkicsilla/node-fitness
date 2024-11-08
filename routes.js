@@ -22,15 +22,6 @@ router.get("/", (req, res, next) => {
     res_exercises = requests.get(f"{BASE_URL_WORKOUT}/exercises?muscle={muscle}").json()
     return jsonify(res_exercises['exercises'])*/
 
-/*router.get("/:handle", async function (req, res, next) {
-        try {
-          const company = await Company.get(req.params.handle);
-          return res.json({ company });
-        } catch (err) {
-          return next(err);
-        }
-      });*/
-
 router.get("/exercises/:muscle", async (req, res, next) => {
   const { muscle } = req.params;
   try {
@@ -60,6 +51,7 @@ def get_videos():
     #res = requests.get(f"{BASE_URL_WORKOUT}/videos").json()
     #return jsonify(res['videos'])
     return render_template('videos.html', name=name, videos=res_videos['videos']) */
+
 router.get("/videos/:name", async (req, res, next) => {
   const { name } = req.params;
   try {
@@ -87,12 +79,31 @@ router.get("/users", middleware.allowThis, async function (req, res, next) {
   }
 });
 
-router.get("/users/:username", async function (req, res, next) {
+router.get("/users/:id", async function (req, res, next) {
   try {
-    const user = await User.getUser(req.params.username);
+    let user = await User.getUserById(req.params.id);
     return res.json(user);
-  } catch (err) {
-    return next(err);
+  } catch (e) {
+    return next(e);
+  }
+});
+
+router.delete("/:username", async function (req, res, next) {
+  try {
+    const { usernae } = req.params;
+    const results = await db.query("DELETE FROM users WHERE code = $1", [
+      username,
+    ]);
+    if (results.rowCount === 0) {
+      let notFoundError = new notFoundError(
+        `There is no user with this username '${req.params.username}`
+      );
+      //notFoundError.status = 404;
+      throw notFoundError;
+    }
+    return res.json({ status: "deleted" });
+  } catch (e) {
+    return next(e);
   }
 });
 
