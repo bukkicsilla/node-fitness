@@ -4,23 +4,21 @@ const bcrypt = require("bcrypt");
 const db = require("./db");
 const User = require("./models/User");
 const middleware = require("./middleware");
+const { BCRYPT_WORK_FACTOR } = require("./config");
+
 const {
   NotFoundError,
   BadRequestError,
   ExpressError,
 } = require("./expressError");
+
 const router = new express.Router();
 const BASE_URL_WORKOUT = "https://api-workout-sq1f.onrender.com/api/workout";
-const BCRYPT_WORK_FACTOR = 12;
+//const BCRYPT_WORK_FACTOR = 12;
 
 router.get("/", (req, res, next) => {
   res.send("API FITNESS");
 });
-
-/*def api_exercise_by_muscle(muscle):
-    #muscle = request.args.get('muscle')
-    res_exercises = requests.get(f"{BASE_URL_WORKOUT}/exercises?muscle={muscle}").json()
-    return jsonify(res_exercises['exercises'])*/
 
 router.get("/exercises/:muscle", async (req, res, next) => {
   const { muscle } = req.params;
@@ -40,17 +38,6 @@ router.get("/exercises/:muscle", async (req, res, next) => {
     return next(err);
   }
 });
-
-/*@app.route('/videos')
-def get_videos():
-    '''Get YoutTube videos with a specific exercise name from the workout API.'''
-    if not_authorized():
-        return redirect('/auth')
-    name = request.args.get('name')
-    res_videos = requests.get(f"{BASE_URL_WORKOUT}/videos?name={name}").json()
-    #res = requests.get(f"{BASE_URL_WORKOUT}/videos").json()
-    #return jsonify(res['videos'])
-    return render_template('videos.html', name=name, videos=res_videos['videos']) */
 
 router.get("/videos/:name", async (req, res, next) => {
   const { name } = req.params;
@@ -88,20 +75,11 @@ router.get("/users/:id", async function (req, res, next) {
   }
 });
 
-router.delete("/:username", async function (req, res, next) {
+router.delete("/users/:id", async function (req, res, next) {
   try {
-    const { usernae } = req.params;
-    const results = await db.query("DELETE FROM users WHERE code = $1", [
-      username,
-    ]);
-    if (results.rowCount === 0) {
-      let notFoundError = new notFoundError(
-        `There is no user with this username '${req.params.username}`
-      );
-      //notFoundError.status = 404;
-      throw notFoundError;
-    }
-    return res.json({ status: "deleted" });
+    let user = await User.getUserById(req.params.id);
+    await user.remove();
+    return res.json({ msg: " user deleted" });
   } catch (e) {
     return next(e);
   }

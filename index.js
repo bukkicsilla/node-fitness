@@ -1,7 +1,9 @@
+"use strict";
 const express = require("express");
 const cors = require("cors");
 const { NotFoundError } = require("./expressError");
 const apiFitnessRoutes = require("./routes");
+const { PORT } = require("./config");
 
 const app = express();
 
@@ -28,6 +30,6 @@ app.use(function (err, req, res, next) {
   });
 });
 
-app.listen(3001, () => {
-  console.log("Server is running on port 3001");
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });

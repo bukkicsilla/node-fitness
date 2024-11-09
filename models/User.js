@@ -51,5 +51,14 @@ class User {
     ]);
     return results.rowCount;
   }
+  async remove() {
+    await db.query(
+      `
+      DELETE FROM users
+      WHERE id = $1
+    `,
+      [this.id]
+    );
+  }
 }
 module.exports = User;
