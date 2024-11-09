@@ -2,18 +2,24 @@
 const express = require("express");
 const cors = require("cors");
 const { NotFoundError } = require("./expressError");
-const apiFitnessRoutes = require("./routes");
+const apiFitnessRoutes = require("./routes/basic");
 const { PORT } = require("./config");
+
+const authRoutes = require("./routes/auth");
+const usersRoutes = require("./routes/users");
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
-app.use("/api/fitness", apiFitnessRoutes);
+app.use("/", apiFitnessRoutes);
+app.use("/auth", authRoutes);
+app.use("/users", usersRoutes);
 
-app.get("/", (req, res) => {
+/*app.get("/", (req, res) => {
   res.send("Hello World!");
-});
+});*/
+
 /** Handle 404 errors -- this matches everything */
 app.use(function (req, res, next) {
   return next(new NotFoundError());
