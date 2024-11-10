@@ -1,6 +1,5 @@
 "use strict";
 const { Client } = require("pg");
-const { getDBUri } = require("./config");
 const { getDatabaseUri } = require("./config");
 
 //let DB_URI = "postgresql:///workout_flask";

@@ -1,22 +1,77 @@
+"use strict";
+
 const express = require("express");
-const axios = require("axios");
+//const axios = require("axios");
 const bcrypt = require("bcrypt");
 const db = require("../db");
 const User = require("../models/User");
-const middleware = require("../middleware");
+//const middleware = require("../middleware");
 const { BCRYPT_WORK_FACTOR } = require("../config");
+const { createToken } = require("../helpers/tokens");
 
-const {
-  NotFoundError,
-  BadRequestError,
-  ExpressError,
-} = require("../expressError");
+const { BadRequestError } = require("../expressError");
 
 const router = new express.Router();
 const BASE_URL_WORKOUT = "https://api-workout-sq1f.onrender.com/api/workout";
 
-//authorization
+/** POST /auth/register:   { user } => { token }
+ *
+ * user must include { username, password, firstName, lastName, email }
+ *
+ * Returns JWT token which can be used to authenticate further requests.
+ *
+ * Authorization required: none
+ */
+
 router.post("/register", async function (req, res, next) {
+  try {
+    //const validator = jsonschema.validate(req.body, userRegisterSchema);
+    /*if (!validator.valid) {
+      const errs = validator.errors.map((e) => e.stack);
+      throw new BadRequestError(errs);
+    }*/
+
+    const { username, password, email, first_name, last_name } = req.body;
+    if (!username || !password || !email || !first_name || !last_name) {
+      throw new BadRequestError("username and password required");
+    }
+    const newUser = await User.register({ ...req.body });
+    const token = createToken(newUser);
+    return res.status(201).json({ token });
+  } catch (err) {
+    return next(err);
+  }
+});
+
+/** POST /auth/token:  { username, password } => { token }
+ *
+ * Returns JWT token which can be used to authenticate further requests.
+ *
+ * Authorization required: none
+ */
+
+router.post("/token", async function (req, res, next) {
+  try {
+    //const validator = jsonschema.validate(req.body, userAuthSchema);
+    /*if (!validator.valid) {
+      const errs = validator.errors.map((e) => e.stack);
+      throw new BadRequestError(errs);
+    }*/
+
+    const { username, password } = req.body;
+    if (!username || !password) {
+      throw new BadRequestError("Username and password required");
+    }
+    const user = await User.authenticate(username, password);
+    const token = createToken(user);
+    return res.json({ token });
+  } catch (err) {
+    return next(err);
+  }
+});
+
+//authorization for insomnia testing
+/*router.post("/register", async function (req, res, next) {
   try {
     const { username, password, email, first_name, last_name } = req.body;
     if (!username || !password || !email || !first_name || !last_name) {
@@ -31,9 +86,9 @@ router.post("/register", async function (req, res, next) {
   } catch (err) {
     return next(err);
   }
-});
+});*/
 
-router.post("/login", async function (req, res, next) {
+/*router.post("/login", async function (req, res, next) {
   try {
     const { username, password } = req.body;
     if (!username || !password) {
@@ -54,6 +109,6 @@ router.post("/login", async function (req, res, next) {
   } catch (err) {
     return next(err);
   }
-});
+});*/
 
 module.exports = router;

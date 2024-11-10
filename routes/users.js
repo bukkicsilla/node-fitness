@@ -1,16 +1,17 @@
 const express = require("express");
-const axios = require("axios");
-const bcrypt = require("bcrypt");
-const db = require("../db");
+//const axios = require("axios");
+//const bcrypt = require("bcrypt");
+//const db = require("../db");
 const User = require("../models/User");
 const middleware = require("../middleware");
-const { BCRYPT_WORK_FACTOR } = require("../config");
+const { ensureCorrectUser } = require("../middleware/jwt");
+//const { BCRYPT_WORK_FACTOR } = require("../config");
 
-const {
+/*const {
   NotFoundError,
   BadRequestError,
   ExpressError,
-} = require("../expressError");
+} = require("../expressError");*/
 
 const router = new express.Router();
 //const BASE_URL_WORKOUT = "https://api-workout-sq1f.onrender.com/api/workout";
@@ -32,6 +33,23 @@ router.get("/:id", async function (req, res, next) {
     return res.json(user);
   } catch (e) {
     return next(e);
+  }
+});
+
+/** GET /[username] => { user }
+ *
+ * Returns { username, firstName, lastName, isAdmin, jobs }
+ *   where jobs is { id, title, companyHandle, companyName, state }
+ *
+ * Authorization required: admin or same user-as-:username
+ **/
+
+router.get("/:username", ensureCorrectUser, async function (req, res, next) {
+  try {
+    const user = await User.get(req.params.username);
+    return res.json({ user });
+  } catch (err) {
+    return next(err);
   }
 });
 

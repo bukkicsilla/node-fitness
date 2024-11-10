@@ -1,16 +1,8 @@
 const express = require("express");
 const axios = require("axios");
-const bcrypt = require("bcrypt");
-const db = require("../db");
-const User = require("../models/User");
-const middleware = require("../middleware");
-const { BCRYPT_WORK_FACTOR } = require("../config");
 
-const {
-  NotFoundError,
-  BadRequestError,
-  ExpressError,
-} = require("../expressError");
+const { NotFoundError } = require("../expressError");
+const { ensureLoggedIn } = require("../middleware/jwt");
 
 const router = new express.Router();
 const BASE_URL_WORKOUT = "https://api-workout-sq1f.onrender.com/api/workout";
@@ -38,7 +30,7 @@ router.get("/exercises/:muscle", async (req, res, next) => {
   }
 });
 
-router.get("/videos/:name", async (req, res, next) => {
+router.get("/videos/:name", ensureLoggedIn, async (req, res, next) => {
   const { name } = req.params;
   try {
     const resVideos = await axios.get(`${BASE_URL_WORKOUT}/videos`, {
