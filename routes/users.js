@@ -27,14 +27,14 @@ router.get("/", middleware.allowThis, async function (req, res, next) {
   }
 });
 
-router.get("/:id", async function (req, res, next) {
+/*router.get("/:id", async function (req, res, next) {
   try {
     let user = await User.getUserById(req.params.id);
     return res.json(user);
   } catch (e) {
     return next(e);
   }
-});
+});*/
 
 /** GET /[username] => { user }
  *

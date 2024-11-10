@@ -1,6 +1,7 @@
 const bcrypt = require("bcrypt");
 const db = require("../db");
 const { NotFoundError } = require("../expressError");
+const { BCRYPT_WORK_FACTOR } = require("../config");
 class User {
   constructor(id, username, password, email, first_name, last_name) {
     this.id = id;

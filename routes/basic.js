@@ -30,7 +30,7 @@ router.get("/exercises/:muscle", async (req, res, next) => {
   }
 });
 
-router.get("/videos/:name", ensureLoggedIn, async (req, res, next) => {
+router.get("/videos/:name", async (req, res, next) => {
   const { name } = req.params;
   try {
     const resVideos = await axios.get(`${BASE_URL_WORKOUT}/videos`, {
