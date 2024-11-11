@@ -4,7 +4,7 @@ const express = require("express");
 //const db = require("../db");
 const User = require("../models/User");
 const middleware = require("../middleware");
-const { ensureCorrectUser } = require("../middleware/jwt");
+const { ensureLoggedIn, ensureCorrectUser } = require("../middleware/jwt");
 //const { BCRYPT_WORK_FACTOR } = require("../config");
 
 /*const {
@@ -62,5 +62,64 @@ router.delete("/:id", async function (req, res, next) {
     return next(e);
   }
 });
+
+/*@app.route('/users/update/<int:user_id>', methods=['GET', 'POST'])
+def update_user(user_id):
+    '''Update user information.'''
+    if "user_id" not in session:
+        flash("Please login first!", "msguser")
+        return redirect('/auth')
+    user = User.query.get_or_404(user_id)
+    form = UserUpdateForm(obj=user)
+    if form.validate_on_submit():
+        user.username = form.username.data
+        user.email = form.email.data
+        user.first_name = form.first_name.data
+        user.last_name = form.last_name.data
+        db.session.commit()
+        return redirect(f'/profile/{user.username}')
+    return render_template('update_user.html', form=form, user=user)*/
+
+/** PATCH /[username] { user } => { user }
+ *
+ * Data can include:
+ *   { firstName, lastName, password, email }
+ *
+ * Returns { username, firstName, lastName, email, isAdmin }
+ *
+ * Authorization required: admin or same-user-as-:username
+ **/
+
+router.patch("/:userid", ensureLoggedIn, async function (req, res, next) {
+  try {
+    //const validator = jsonschema.validate(req.body, userUpdateSchema);
+    /*if (!validator.valid) {
+        const errs = validator.errors.map((e) => e.stack);
+        throw new BadRequestError(errs);
+      }*/
+
+    const user = await User.update(req.params.userid, req.body);
+    console.log("USer Edited", user);
+    return res.json({ user });
+  } catch (err) {
+    return next(err);
+  }
+});
+
+/** Update user, returning user */
+/*router.patch("/:id", async function (req, res, next) {
+  try {
+    const { name, type } = req.body;
+    const result = await db.query(
+      `UPDATE users SET name=$1, type=$2
+    WHERE id = $3
+               RETURNING id, name, type`,
+      [name, type, req.params.id]
+    );
+    return res.json(result.rows[0]);
+  } catch (err) {
+    return next(err);
+  }
+});*/
 
 module.exports = router;

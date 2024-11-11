@@ -156,5 +156,43 @@ class User {
       [this.id]
     );
   }
+
+  /** Update user data with `data`.
+   *
+   * This is a "partial update" --- it's fine if data doesn't contain
+   * all the fields; this only changes provided ones.
+   *
+   * Data can include:
+   *   { username, first_name, last_name, email }
+   *
+   * Returns { id, username, email, first_name, last_name }
+   *
+   * Throws NotFoundError if not found.
+   */
+
+  static async update(userid, data) {
+    /*if (data.password) {
+      data.password = await bcrypt.hash(data.password, BCRYPT_WORK_FACTOR);
+    }*/
+    const { username, email, first_name, last_name } = data;
+    /*const result = await db.query(
+        `UPDATE users SET name=$1, type=$2
+      WHERE id = $3
+                 RETURNING id, name, type`,
+        [name, type, req.params.id]
+      );*/
+    const result = await db.query(
+      `UPDATE users SET username=$1, email=$2, first_name=$3, last_name=$4
+         WHERE id = $5
+                 RETURNING id, username, email, first_name, last_name`,
+      [username, email, first_name, last_name, userid]
+    );
+    const user = result.rows[0];
+
+    if (!user) throw new NotFoundError(`No user: ${username}`);
+
+    //delete user.password;
+    return user;
+  }
 }
 module.exports = User;
