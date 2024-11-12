@@ -3,6 +3,7 @@ const express = require("express");
 //const bcrypt = require("bcrypt");
 //const db = require("../db");
 const User = require("../models/User");
+const Exercise = require("../models/Exercise");
 const middleware = require("../middleware");
 const { ensureLoggedIn, ensureCorrectUser } = require("../middleware/jwt");
 //const { BCRYPT_WORK_FACTOR } = require("../config");
@@ -15,6 +16,19 @@ const { ensureLoggedIn, ensureCorrectUser } = require("../middleware/jwt");
 
 const router = new express.Router();
 //const BASE_URL_WORKOUT = "https://api-workout-sq1f.onrender.com/api/workout";
+
+function transformWord(word) {
+  // Case 1: Capitalize a single word (e.g., "abdominals" -> "Abdominals")
+  if (!word.includes("_")) {
+    return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+  }
+
+  // Case 2: Replace underscore with space and capitalize each word (e.g., "lower_back" -> "Lower Back")
+  return word
+    .split("_")
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+    .join(" ");
+}
 
 router.get("/", middleware.allowThis, async function (req, res, next) {
   try {
@@ -53,6 +67,53 @@ router.get("/:username", ensureCorrectUser, async function (req, res, next) {
   }
 });
 
+async function getMuscleGroups(exercises, userVideoIdSet) {
+  const muscleGroups = {};
+
+  await Promise.all(
+    exercises.map(async (exercise) => {
+      const exerciseWithVideos = await Exercise.getExerciseByName(
+        exercise.name
+      );
+      //console.log("Exercise with Videos", exerciseWithVideos.videos);
+
+      const videoIds = exerciseWithVideos.videos.map((video) => video.id);
+      const hasUserVideos = videoIds.some((id) => userVideoIdSet.has(id));
+
+      if (exerciseWithVideos.videos.length && hasUserVideos) {
+        const transformedMuscle = transformWord(exercise.muscle);
+        if (!muscleGroups[transformedMuscle]) {
+          muscleGroups[transformedMuscle] = [];
+        }
+        muscleGroups[transformedMuscle].push({
+          ...exercise,
+          videos: exerciseWithVideos.videos.filter((video) =>
+            userVideoIdSet.has(video.id)
+          ),
+        });
+      }
+    })
+  );
+  console.log("Muscle Groups", muscleGroups);
+  return muscleGroups;
+}
+
+router.get("/:id/videos", async function (req, res, next) {
+  try {
+    const user = await User.getUserById(req.params.id);
+    const userVideoIdSet = new Set(user.videoIds);
+    console.log("Video Set", userVideoIdSet);
+    const exercises = await Exercise.getExercises();
+    const muscleGroups = await getMuscleGroups(exercises, userVideoIdSet);
+    return res.json({
+      muscle_groups: muscleGroups,
+      ids: user.videoIds,
+    });
+  } catch (err) {
+    return next(err);
+  }
+});
+
 router.delete("/:id", async function (req, res, next) {
   try {
     let user = await User.getUserById(req.params.id);
@@ -62,23 +123,6 @@ router.delete("/:id", async function (req, res, next) {
     return next(e);
   }
 });
-
-/*@app.route('/users/update/<int:user_id>', methods=['GET', 'POST'])
-def update_user(user_id):
-    '''Update user information.'''
-    if "user_id" not in session:
-        flash("Please login first!", "msguser")
-        return redirect('/auth')
-    user = User.query.get_or_404(user_id)
-    form = UserUpdateForm(obj=user)
-    if form.validate_on_submit():
-        user.username = form.username.data
-        user.email = form.email.data
-        user.first_name = form.first_name.data
-        user.last_name = form.last_name.data
-        db.session.commit()
-        return redirect(f'/profile/{user.username}')
-    return render_template('update_user.html', form=form, user=user)*/
 
 /** PATCH /[username] { user } => { user }
  *
@@ -99,7 +143,7 @@ router.patch("/:userid", ensureLoggedIn, async function (req, res, next) {
       }*/
 
     const user = await User.update(req.params.userid, req.body);
-    console.log("USer Edited", user);
+    //console.log("User Edited", user);
     return res.json({ user });
   } catch (err) {
     return next(err);

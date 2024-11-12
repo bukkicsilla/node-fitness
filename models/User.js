@@ -27,7 +27,7 @@ class User {
     );
 
     const user = result.rows[0];
-    console.log("user", user);
+    //console.log("user", user);
 
     if (user) {
       // compare hashed password to a new hash from password
@@ -106,13 +106,14 @@ class User {
     if (!user) {
       throw new NotFoundError("User not found");
     }
-    return new User(
-      user.id,
-      user.username,
-      user.email,
-      user.first_name,
-      user.last_name
+    const videosResults = await db.query(
+      `SELECT video_id, rating FROM users_videos WHERE user_id = $1`,
+      [id]
     );
+    //console.log("videosResults", videosResults);
+    //user.videos = videosResults.rows;
+    user.videoIds = videosResults.rows.map((row) => row.video_id);
+    return user;
   }
 
   /** Given a username, return data about user.
