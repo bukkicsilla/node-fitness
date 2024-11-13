@@ -2,7 +2,7 @@
 const express = require("express");
 const cors = require("cors");
 const { NotFoundError } = require("./expressError");
-const apiFitnessRoutes = require("./routes/basic");
+const basicRoutes = require("./routes/basic");
 const { PORT } = require("./config");
 const { authenticateJWT } = require("./middleware/jwt");
 
@@ -15,7 +15,7 @@ app.use(cors());
 app.use(express.json());
 app.use(authenticateJWT);
 
-app.use("/", apiFitnessRoutes);
+app.use("/", basicRoutes);
 app.use("/auth", authRoutes);
 app.use("/users", usersRoutes);
 

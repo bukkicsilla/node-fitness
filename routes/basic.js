@@ -8,7 +8,7 @@ const router = new express.Router();
 const BASE_URL_WORKOUT = "https://api-workout-sq1f.onrender.com/api/workout";
 
 router.get("/", (req, res, next) => {
-  res.send("API FITNESS");
+  res.send("API FITNESS APPLICATION");
 });
 
 router.get("/exercises/:muscle", async (req, res, next) => {
