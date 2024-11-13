@@ -48,5 +48,56 @@ class Exercise {
     exercise.videos = videosResults.rows;
     return exercise;
   }
+  // Fetch all exercises with their associated videos
+  static async getExercisesWithVideos() {
+    // Query to fetch exercises and their related videos in one go
+    const result = await db.query(
+      `SELECT 
+         exercises.name AS exercise_name,
+         exercises.exercise_type,
+         exercises.muscle,
+         exercises.equipment,
+         exercises.difficulty,
+         videos.id AS video_id,
+         videos.videoid AS video_videoid,
+         videos.title AS video_title,
+         videos.rating AS video_rating
+       FROM exercises
+       LEFT JOIN videos ON exercises.name = videos.exercise_name
+       ORDER BY exercises.name`
+    );
+
+    // Organize the result into a structured format
+    const exercisesMap = {};
+
+    result.rows.forEach((row) => {
+      const exerciseName = row.exercise_name;
+
+      // If the exercise is not yet in the map, add it
+      if (!exercisesMap[exerciseName]) {
+        exercisesMap[exerciseName] = {
+          name: row.exercise_name,
+          exercise_type: row.exercise_type,
+          muscle: row.muscle,
+          equipment: row.equipment,
+          difficulty: row.difficulty,
+          videos: [],
+        };
+      }
+
+      // If there is a video for this exercise, add it to the exercise's videos list
+      if (row.video_id) {
+        exercisesMap[exerciseName].videos.push({
+          id: row.video_id,
+          videoid: row.video_videoid,
+          title: row.video_title,
+          rating: row.video_rating,
+        });
+      }
+    });
+
+    // Convert the map to an array of exercises
+    return Object.values(exercisesMap);
+  }
 }
 module.exports = Exercise;

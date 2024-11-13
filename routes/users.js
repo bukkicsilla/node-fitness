@@ -68,7 +68,7 @@ router.get("/:username", ensureCorrectUser, async function (req, res, next) {
   }
 });
 
-async function getMuscleGroups(exercises, userVideoIdSet) {
+/*async function getMuscleGroups(exercises, userVideoIdSet) {
   const muscleGroups = {};
 
   await Promise.all(
@@ -105,6 +105,43 @@ router.get("/:id/videos", async function (req, res, next) {
     const userVideoIdSet = new Set(user.videoIds);
     console.log("Video Set", userVideoIdSet);
     const exercises = await Exercise.getExercises();
+    const muscleGroups = await getMuscleGroups(exercises, userVideoIdSet);
+    return res.json({
+      muscle_groups: muscleGroups,
+      ids: user.videoIds,
+    });
+  } catch (err) {
+    return next(err);
+  }
+});*/
+
+async function getMuscleGroups(exercises, userVideoIdSet) {
+  const muscleGroups = {};
+
+  exercises.forEach((exercise) => {
+    const videos = exercise.videos.filter((video) =>
+      userVideoIdSet.has(video.id)
+    );
+    if (videos.length) {
+      const transformedMuscle = transformWord(exercise.muscle);
+      if (!muscleGroups[transformedMuscle]) {
+        muscleGroups[transformedMuscle] = [];
+      }
+      muscleGroups[transformedMuscle].push({
+        ...exercise,
+        videos,
+      });
+    }
+  });
+
+  return muscleGroups;
+}
+
+router.get("/:id/videos", async function (req, res, next) {
+  try {
+    const user = await User.getUserById(req.params.id);
+    const userVideoIdSet = new Set(user.videoIds);
+    const exercises = await Exercise.getExercisesWithVideos(); // Modify this to fetch all exercises with videos in one go
     const muscleGroups = await getMuscleGroups(exercises, userVideoIdSet);
     return res.json({
       muscle_groups: muscleGroups,
