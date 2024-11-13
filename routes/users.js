@@ -4,6 +4,7 @@ const express = require("express");
 //const db = require("../db");
 const User = require("../models/User");
 const Exercise = require("../models/Exercise");
+const Playlist = require("../models/Playlist");
 const middleware = require("../middleware");
 const { ensureLoggedIn, ensureCorrectUser } = require("../middleware/jwt");
 //const { BCRYPT_WORK_FACTOR } = require("../config");
@@ -109,6 +110,35 @@ router.get("/:id/videos", async function (req, res, next) {
       muscle_groups: muscleGroups,
       ids: user.videoIds,
     });
+  } catch (err) {
+    return next(err);
+  }
+});
+
+router.get("/:id/playlists", async function (req, res, next) {
+  try {
+    const playlists = await Playlist.getPlaylistsByUser(req.params.id);
+    return res.json({ playlists });
+  } catch (err) {
+    return next(err);
+  }
+});
+
+router.get("/playlists/:playlistid/videos", async function (req, res, next) {
+  try {
+    const data = await Playlist.getPlaylistVideos(req.params.playlistid);
+    return res.json({ data });
+  } catch (err) {
+    return next(err);
+  }
+});
+
+router.get("/:id/playlists-with-videos", async function (req, res, next) {
+  try {
+    const playlists = await Playlist.getAllPlaylistsWithVideosByUser(
+      req.params.id
+    );
+    return res.json({ playlists });
   } catch (err) {
     return next(err);
   }

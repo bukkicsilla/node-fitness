@@ -1,7 +1,7 @@
-const bcrypt = require("bcrypt");
+//const bcrypt = require("bcrypt");
 const db = require("../db");
 const { NotFoundError, UnauthorizedError } = require("../expressError");
-const { BCRYPT_WORK_FACTOR } = require("../config");
+//const { BCRYPT_WORK_FACTOR } = require("../config");
 class Exercise {
   constructor(
     name,
