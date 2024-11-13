@@ -42,7 +42,7 @@ class Exercise {
       throw new NotFoundError("User not found");
     }
     const videosResults = await db.query(
-      `SELECT id, videoid FROM videos WHERE exercise_name = $1`,
+      `SELECT id, videoid, rating  FROM videos WHERE exercise_name = $1`,
       [name]
     );
     exercise.videos = videosResults.rows;
