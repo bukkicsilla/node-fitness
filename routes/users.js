@@ -183,8 +183,8 @@ router.get("/:id/playlists-with-videos", async function (req, res, next) {
 
 router.delete("/:id", async function (req, res, next) {
   try {
-    let user = await User.getUserById(req.params.id);
-    await user.remove();
+    //let user = await User.getUserById(req.params.id);
+    await User.removeUser(req.params.id);
     return res.json({ msg: " user deleted" });
   } catch (e) {
     return next(e);

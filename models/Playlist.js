@@ -49,7 +49,7 @@ class Playlist {
     // Loop through each playlist to get associated videos
     for (let playlist of playlists) {
       const videosResults = await db.query(
-        `SELECT videos.id, videos.videoid FROM playlists
+        `SELECT videos.id, videos.videoid, videos.exercise_name FROM playlists
            LEFT JOIN playlists_videos ON playlists.id = playlists_videos.playlist_id
            LEFT JOIN videos ON playlists_videos.video_id = videos.id
            WHERE playlists.id = $1`,
@@ -58,6 +58,7 @@ class Playlist {
       playlist.videos = videosResults.rows.map((row) => ({
         id: row.id,
         videoid: row.videoid,
+        exercise_name: row.exercise_name,
       }));
     }
     return playlists;

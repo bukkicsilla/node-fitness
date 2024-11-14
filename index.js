@@ -8,6 +8,8 @@ const { authenticateJWT } = require("./middleware/jwt");
 
 const authRoutes = require("./routes/auth");
 const usersRoutes = require("./routes/users");
+const videosRoutes = require("./routes/videos");
+const playlistsRoutes = require("./routes/playlists");
 
 const app = express();
 
@@ -18,6 +20,8 @@ app.use(authenticateJWT);
 app.use("/", basicRoutes);
 app.use("/auth", authRoutes);
 app.use("/users", usersRoutes);
+app.use("/videos", videosRoutes);
+app.use("/playlists", playlistsRoutes);
 
 /*app.get("/", (req, res) => {
   res.send("Hello World!");

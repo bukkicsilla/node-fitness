@@ -148,14 +148,18 @@ class User {
     ]);
     return results.rowCount;
   }
-  async remove() {
-    await db.query(
+
+  static async removeUser(userid) {
+    const results = await db.query(
       `
       DELETE FROM users
       WHERE id = $1
-    `,
-      [this.id]
+      RETURNING id, username
+      `,
+      [userid]
     );
+    const user = results.rows[0];
+    if (!user) throw new NotFoundError(`No user: ${username}`);
   }
 
   /** Update user data with `data`.
