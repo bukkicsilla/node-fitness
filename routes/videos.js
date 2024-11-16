@@ -1,21 +1,11 @@
 const express = require("express");
 const axios = require("axios");
-//const User = require("../models/User");
 const UserVideo = require("../models/UserVideo");
-//const Exercise = require("../models/Exercise");
 const Video = require("../models/Video");
 const { BadRequestError, UnauthorizedError } = require("../expressError");
-const { ensureLoggedIn, ensureCorrectUser } = require("../middleware/jwt");
+const { ensureLoggedIn } = require("../middleware/jwt");
 const BASE_URL_WORKOUT = "https://api-workout-sq1f.onrender.com/api/workout";
 const router = new express.Router();
-
-/*@app.route('/auth/videos/delete/<int:id>')
-def auth_delete_video(id):
-    '''Delete a video to the database with authentication.'''
-    user_video = UserVideo.query.filter(UserVideo.user_id==session['user_id'], UserVideo.video_id == id).first()
-    db.session.delete(user_video)
-    db.session.commit()
-    return redirect('/auth/my_videos')*/
 
 router.post("/:name/:videoid", ensureLoggedIn, async function (req, res, next) {
   try {

@@ -1,22 +1,11 @@
 const express = require("express");
-//const axios = require("axios");
-//const bcrypt = require("bcrypt");
-//const db = require("../db");
 const User = require("../models/User");
 const Exercise = require("../models/Exercise");
 const Playlist = require("../models/Playlist");
 const middleware = require("../middleware");
 const { ensureLoggedIn, ensureCorrectUser } = require("../middleware/jwt");
-//const { BCRYPT_WORK_FACTOR } = require("../config");
-
-/*const {
-  NotFoundError,
-  BadRequestError,
-  ExpressError,
-} = require("../expressError");*/
 
 const router = new express.Router();
-//const BASE_URL_WORKOUT = "https://api-workout-sq1f.onrender.com/api/workout";
 
 function transformWord(word) {
   // Case 1: Capitalize a single word (e.g., "abdominals" -> "Abdominals")

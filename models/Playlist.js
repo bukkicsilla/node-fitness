@@ -63,5 +63,38 @@ class Playlist {
     }
     return playlists;
   }
+
+  static async getPlaylist(name, userid) {
+    const result = await db.query(
+      `SELECT id, name, user_id
+           FROM playlists
+           WHERE name = $1 AND user_id = $2`,
+      [name, userid]
+    );
+    const playlist = result.rows[0];
+    return playlist;
+  }
+
+  static async addPlaylist(name, userid) {
+    const result = await db.query(
+      `INSERT INTO playlists (name, user_id)
+           VALUES ($1, $2)
+           RETURNING id, name, user_id`,
+      [name, userid]
+    );
+    const playlist = result.rows[0];
+    return playlist;
+  }
+
+  static async deletePlaylist(name, userid) {
+    const result = await db.query(
+      `DELETE FROM playlists
+           WHERE name = $1 AND user_id = $2
+           RETURNING name`,
+      [name, userid]
+    );
+
+    return result.rowCount;
+  }
 }
 module.exports = Playlist;

@@ -1,5 +1,4 @@
 const db = require("../db");
-const { NotFoundError } = require("../expressError");
 class UserVideo {
   constructor(user_id, video_id, rating) {
     this.user_id = user_id;
@@ -19,8 +18,6 @@ class UserVideo {
   }
 
   static async addUserVideo(userid, videoid, rating) {
-    //console.log("userid", userid);
-    //console.log("videoid", videoid);
     const result = await db.query(
       `INSERT INTO users_videos (user_id, video_id, rating)
            VALUES ($1, $2, $3)
