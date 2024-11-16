@@ -1,5 +1,4 @@
 const db = require("../db");
-const { NotFoundError, UnauthorizedError } = require("../expressError");
 class Playlist {
   constructor(id, name, user_id) {
     this.id = id;
