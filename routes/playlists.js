@@ -4,39 +4,40 @@ const PlaylistVideo = require("../models/PlaylistVideo");
 const { ensureLoggedIn } = require("../middleware/jwt");
 const router = new express.Router();
 
-router.post("/:video_id", ensureLoggedIn, async function (req, res, next) {
-  try {
-    const { video_id } = req.params;
-    const { name } = req.body;
-    const userid = res.locals.user.userid;
-    const existing_playlist = await Playlist.getPlaylist(name, userid);
-    if (!existing_playlist) {
-      const newPlaylist = await Playlist.addPlaylist(name, userid);
-      const pv = await PlaylistVideo.addPlaylistVideo(newPlaylist.id, video_id);
-      return res
-        .status(201)
-        .json({ msg: "New Playlist added", newPlaylist, pv });
+router.post(
+  "/videos/:name/:video_id",
+  ensureLoggedIn,
+  async function (req, res, next) {
+    try {
+      const { video_id, name } = req.params;
+      //const { name } = req.body;
+      const userid = res.locals.user.userid;
+      const existing_playlist = await Playlist.getPlaylist(name, userid);
+      if (!existing_playlist) {
+        const newPlaylist = await Playlist.addPlaylist(name, userid);
+        const pv = await PlaylistVideo.addPlaylistVideo(
+          newPlaylist.id,
+          video_id
+        );
+        return res.status(201).json({ msg: "New Playlist added" });
+      }
+      const existing_pv = await PlaylistVideo.getPlaylistVideo(
+        existing_playlist.id,
+        video_id
+      );
+      if (existing_pv) {
+        return res.json({ msg: "Video already added to the playlist" });
+      }
+      const pv = await PlaylistVideo.addPlaylistVideo(
+        existing_playlist.id,
+        video_id
+      );
+      return res.json({ msg: "Video adeed to the Playlist" });
+    } catch (err) {
+      return next(err);
     }
-    const existing_pv = await PlaylistVideo.getPlaylistVideo(
-      existing_playlist.id,
-      video_id
-    );
-    if (existing_pv) {
-      return res.json({
-        msg: "Video already added to the playlist.",
-        existing_playlist,
-        existing_pv,
-      });
-    }
-    const pv = await PlaylistVideo.addPlaylistVideo(
-      existing_playlist.id,
-      video_id
-    );
-    return res.json({ msg: "Video adeed to the Playlist", pv });
-  } catch (err) {
-    return next(err);
   }
-});
+);
 
 /*Delete a video from a playlist. 
 If the playlist is empty after the deletion, the playlist is also deleted.*/

@@ -25,9 +25,7 @@ router.post("/:name/:videoid", ensureLoggedIn, async function (req, res, next) {
       const video = videos.data.videos[0];
       const newVideo = await Video.addVideo({ ...video });
       const newUserVideo = await UserVideo.addUserVideo(userid, newVideo.id, 5);
-      return res
-        .status(201)
-        .json({ msg: "New Video and UserVideo added", newVideo, newUserVideo });
+      return res.status(201).json({ msg: "New Video and UserVideo added" });
     }
     const uv = await UserVideo.getUserVideo(userid, localVideo.id);
     if (!uv) {
@@ -36,7 +34,7 @@ router.post("/:name/:videoid", ensureLoggedIn, async function (req, res, next) {
         localVideo.id,
         5
       );
-      return res.json({ msg: "New UserVideo added", newUserVideo });
+      return res.json({ msg: "New UserVideo added" });
     }
     return res.json({ msg: "Video already added" });
   } catch (err) {
