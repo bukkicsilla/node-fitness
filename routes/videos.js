@@ -73,9 +73,11 @@ router.post(
       if (!res.locals.user) {
         throw new UnauthorizedError("Unauthorized");
       }
+      console.log("What is going on?????");
       const userid = res.locals.user.userid;
       const video_id = req.params.id;
       const rating = req.params.num;
+      //const { rating } = req.body;
       await UserVideo.updateUserVideo(userid, video_id, rating);
       const uvs = await UserVideo.getAllUserVideos(video_id);
       const averageRating =
