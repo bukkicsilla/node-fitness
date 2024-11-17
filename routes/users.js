@@ -1,6 +1,7 @@
 const express = require("express");
 const User = require("../models/User");
 const Exercise = require("../models/Exercise");
+const UserVideo = require("../models/UserVideo");
 const Playlist = require("../models/Playlist");
 const middleware = require("../middleware");
 const { ensureLoggedIn, ensureCorrectUser } = require("../middleware/jwt");
@@ -173,6 +174,8 @@ router.get("/:id/playlists-with-videos", async function (req, res, next) {
 router.delete("/:id", async function (req, res, next) {
   try {
     //let user = await User.getUserById(req.params.id);
+    await UserVideo.deleteAllVideos(req.params.id);
+    await Playlist.deleteAllPlaylists(req.params.id);
     await User.removeUser(req.params.id);
     return res.json({ msg: " user deleted" });
   } catch (e) {

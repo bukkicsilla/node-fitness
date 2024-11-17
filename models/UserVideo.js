@@ -37,5 +37,15 @@ class UserVideo {
     );
     return result.rowCount;
   }
+
+  static async deleteAllVideos(userid) {
+    const result = await db.query(
+      `DELETE FROM users_videos
+           WHERE user_id = $1
+           RETURNING user_id`,
+      [userid]
+    );
+    return result.rowCount;
+  }
 }
 module.exports = UserVideo;

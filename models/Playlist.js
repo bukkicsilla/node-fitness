@@ -95,5 +95,23 @@ class Playlist {
 
     return result.rowCount;
   }
+
+  static async deleteAllPlaylists(userid) {
+    /*Delete all videos first*/
+    const vidoesResult = await db.query(
+      `DELETE FROM playlists_videos WHERE playlist_id 
+      IN (SELECT id FROM playlists WHERE user_id = $1)`,
+      [userid]
+    );
+    /*Delete all playlists*/
+    const result = await db.query(
+      `DELETE FROM playlists
+           WHERE user_id = $1
+           RETURNING name`,
+      [userid]
+    );
+
+    return result.rowCount;
+  }
 }
 module.exports = Playlist;
