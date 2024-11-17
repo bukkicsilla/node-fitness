@@ -65,4 +65,27 @@ router.delete("/uv/:id", ensureLoggedIn, async function (req, res, next) {
   }
 });
 
+router.post(
+  "/rating/:id/:num",
+  ensureLoggedIn,
+  async function (req, res, next) {
+    try {
+      if (!res.locals.user) {
+        throw new UnauthorizedError("Unauthorized");
+      }
+      const userid = res.locals.user.userid;
+      const video_id = req.params.id;
+      const rating = req.params.num;
+      await UserVideo.updateUserVideo(userid, video_id, rating);
+      const uvs = await UserVideo.getAllUserVideos(video_id);
+      const averageRating =
+        uvs.reduce((sum, item) => sum + item.rating, 0) / uvs.length;
+      await Video.updateVideo(video_id, averageRating);
+      return res.json({ msg: "Rating updated" });
+    } catch (err) {
+      return next(err);
+    }
+  }
+);
+
 module.exports = router;

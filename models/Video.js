@@ -1,6 +1,5 @@
 const db = require("../db");
-const { NotFoundError, BadRequestError } = require("../expressError");
-//const { BCRYPT_WORK_FACTOR } = require("../config");
+const { NotFoundError } = require("../expressError");
 class Video {
   constructor(id, videoid, title, rating, exercise_name) {
     this.id = id;
@@ -44,6 +43,18 @@ class Video {
       throw new NotFoundError("Video not found");
     }*/
     return result.rowCount;
+  }
+
+  static async updateVideo(video_id, rating) {
+    const result = await db.query(
+      `UPDATE videos SET rating=$1
+         WHERE id = $2
+                 RETURNING id, rating`,
+      [rating, video_id]
+    );
+    const video = result.rows[0];
+    if (!video) throw new NotFoundError(`No uservideo`);
+    return video;
   }
 }
 module.exports = Video;

@@ -47,5 +47,29 @@ class UserVideo {
     );
     return result.rowCount;
   }
+
+  static async updateUserVideo(userid, video_id, rating) {
+    const result = await db.query(
+      `UPDATE users_videos SET rating=$1
+         WHERE user_id = $2 AND video_id = $3
+                 RETURNING user_id, video_id, rating`,
+      [rating, userid, video_id]
+    );
+    const uservideo = result.rows[0];
+
+    if (!uservideo) throw new NotFoundError(`No uservideo`);
+    return uservideo;
+  }
+
+  static async getAllUserVideos(video_id) {
+    const result = await db.query(
+      `SELECT user_id, video_id, rating
+           FROM users_videos
+           WHERE video_id = $1`,
+      [video_id]
+    );
+    const userVideos = result.rows;
+    return userVideos;
+  }
 }
 module.exports = UserVideo;
