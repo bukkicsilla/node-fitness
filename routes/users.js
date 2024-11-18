@@ -105,7 +105,7 @@ router.get("/:id/videos", async function (req, res, next) {
   }
 });*/
 
-async function getMuscleGroups(exercises, userVideoIdSet) {
+async function getMuscleGroups(exercises, userVideoIdSet, type) {
   const muscleGroups = {};
 
   exercises.forEach((exercise) => {
@@ -113,7 +113,8 @@ async function getMuscleGroups(exercises, userVideoIdSet) {
       userVideoIdSet.has(video.id)
     );
     if (videos.length) {
-      const transformedMuscle = transformWord(exercise.muscle);
+      //const transformedMuscle = transformWord(exercise.muscle);
+      const transformedMuscle = transformWord(exercise[type]);
       if (!muscleGroups[transformedMuscle]) {
         muscleGroups[transformedMuscle] = [];
       }
@@ -127,12 +128,16 @@ async function getMuscleGroups(exercises, userVideoIdSet) {
   return muscleGroups;
 }
 
-router.get("/:id/videos", async function (req, res, next) {
+router.get("/:id/videos/:type", async function (req, res, next) {
   try {
     const user = await User.getUserById(req.params.id);
     const userVideoIdSet = new Set(user.videoIds);
     const exercises = await Exercise.getExercisesWithVideos(); // Modify this to fetch all exercises with videos in one go
-    const muscleGroups = await getMuscleGroups(exercises, userVideoIdSet);
+    const muscleGroups = await getMuscleGroups(
+      exercises,
+      userVideoIdSet,
+      req.params.type
+    );
     return res.json({
       muscle_groups: muscleGroups,
       ids: user.videoIds,
