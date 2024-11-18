@@ -7,6 +7,41 @@ const middleware = require("../middleware");
 const { ensureLoggedIn, ensureCorrectUser } = require("../middleware/jwt");
 
 const router = new express.Router();
+const predefinedMuscles = [
+  "Abdominals",
+  "Adductors",
+  "Abductors",
+  "Biceps",
+  "Calves",
+  "Chest",
+  "Forearms",
+  "Glutes",
+  "Hamstrings",
+  "Lats",
+  "Lower Back",
+  "Middle Back",
+  "Neck",
+  "Quadriceps",
+  "Traps",
+  "Triceps",
+];
+const predefinedEquipment = [
+  "Barbell",
+  "Body Only",
+  "Cable",
+  "Dumbbell",
+  "EZ Curl Bar",
+  "Kettlebells",
+  "Machine",
+  "Medicine Ball",
+  "Other",
+  "Resistance Band",
+  "Smith Machine",
+  "Stability Ball",
+  "Weight Plate",
+];
+const predefinedType = ["Strength", "Cardio", "Stretching"];
+const predefinedDifficulty = ["Beginner", "Intermediate", "Advanced"];
 
 function transformWord(word) {
   // Case 1: Capitalize a single word (e.g., "abdominals" -> "Abdominals")
@@ -21,6 +56,39 @@ function transformWord(word) {
     .join(" ");
 }
 
+function sortGroupItems(mode, groups) {
+  let sortedGroups = {};
+  if (mode === "muscle") {
+    sortedGroups = predefinedMuscles.reduce((sorted, group) => {
+      if (groups[group]) {
+        sorted[group] = groups[group];
+      }
+      return sorted;
+    }, {});
+  } else if (mode === "equipment") {
+    sortedGroups = predefinedEquipment.reduce((sorted, group) => {
+      if (groups[group]) {
+        sorted[group] = groups[group];
+      }
+      return sorted;
+    }, {});
+  } else if (mode === "exercise_type") {
+    sortedGroups = predefinedType.reduce((sorted, group) => {
+      if (groups[group]) {
+        sorted[group] = groups[group];
+      }
+      return sorted;
+    }, {});
+  } else {
+    sortedGroups = predefinedDifficulty.reduce((sorted, group) => {
+      if (groups[group]) {
+        sorted[group] = groups[group];
+      }
+      return sorted;
+    }, {});
+  }
+  return sortedGroups;
+}
 router.get("/", middleware.allowThis, async function (req, res, next) {
   try {
     //const results = await db.query(`SELECT * FROM users`);
@@ -128,16 +196,14 @@ async function getMuscleGroups(exercises, userVideoIdSet, type) {
   return muscleGroups;
 }
 
-router.get("/:id/videos/:type", async function (req, res, next) {
+router.get("/:id/videos/:mode", async function (req, res, next) {
   try {
     const user = await User.getUserById(req.params.id);
+    const mode = req.params.mode;
     const userVideoIdSet = new Set(user.videoIds);
-    const exercises = await Exercise.getExercisesWithVideos(); // Modify this to fetch all exercises with videos in one go
-    const muscleGroups = await getMuscleGroups(
-      exercises,
-      userVideoIdSet,
-      req.params.type
-    );
+    const exercises = await Exercise.getExercisesWithVideos();
+    let muscleGroups = await getMuscleGroups(exercises, userVideoIdSet, mode);
+    muscleGroups = sortGroupItems(mode, muscleGroups);
     return res.json({
       muscle_groups: muscleGroups,
       ids: user.videoIds,
