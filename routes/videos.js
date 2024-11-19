@@ -82,7 +82,7 @@ router.post(
       const uvs = await UserVideo.getAllUserVideos(video_id);
       const averageRating =
         uvs.reduce((sum, item) => sum + item.rating, 0) / uvs.length;
-      await Video.updateVideo(video_id, averageRating);
+      await Video.updateVideo(video_id, averageRating.toFixed(2));
       return res.json({ msg: "Rating updated" });
     } catch (err) {
       return next(err);
