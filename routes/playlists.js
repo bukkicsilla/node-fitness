@@ -4,6 +4,18 @@ const PlaylistVideo = require("../models/PlaylistVideo");
 const { ensureLoggedIn } = require("../middleware/jwt");
 const router = new express.Router();
 
+router.get("/", ensureLoggedIn, async function (req, res, next) {
+  try {
+    const userid = res.locals.user.userid;
+    const playlists = await Playlist.getPlaylistsByUser(userid);
+    const playlistNames = playlists.map((item) => item.name);
+    const sortedNames = playlistNames.sort();
+    return res.json({ sortedNames });
+  } catch (err) {
+    return next(err);
+  }
+});
+
 router.post(
   "/videos/:name/:video_id",
   ensureLoggedIn,

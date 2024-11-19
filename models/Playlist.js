@@ -96,6 +96,7 @@ class Playlist {
     return result.rowCount;
   }
 
+  /*It is needed if the user profile is deleted*/
   static async deleteAllPlaylists(userid) {
     /*Delete all videos first*/
     const vidoesResult = await db.query(
