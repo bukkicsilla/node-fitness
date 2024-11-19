@@ -236,6 +236,8 @@ router.get("/:id/playlists-with-videos", async function (req, res, next) {
     const playlists = await Playlist.getAllPlaylistsWithVideosByUser(
       req.params.id
     );
+    // Sort by name alphabetically
+    playlists.sort((a, b) => a.name.localeCompare(b.name));
     return res.json({ playlists });
   } catch (err) {
     return next(err);
