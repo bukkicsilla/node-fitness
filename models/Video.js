@@ -56,5 +56,13 @@ class Video {
     if (!video) throw new NotFoundError(`No uservideo`);
     return video;
   }
+
+  static async getBestVideos() {
+    const result = await db.query(
+      `SELECT id, videoid, title, rating, exercise_name
+      FROM videos ORDER BY rating DESC LIMIT 10`
+    );
+    return result.rows;
+  }
 }
 module.exports = Video;

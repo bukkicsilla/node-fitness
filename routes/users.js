@@ -39,6 +39,7 @@ const predefinedEquipment = [
   "Smith Machine",
   "Stability Ball",
   "Weight Plate",
+  "None",
 ];
 const predefinedType = ["Strength", "Cardio", "Stretching"];
 const predefinedDifficulty = ["Beginner", "Intermediate", "Advanced"];

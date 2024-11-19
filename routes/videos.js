@@ -90,4 +90,17 @@ router.post(
   }
 );
 
+router.get("/", async function (req, res, next) {
+  try {
+    const videos = await Video.getBestVideos();
+    // Shuffle the array
+    const shuffledVideos = videos.sort(() => Math.random() - 0.5);
+    // Select the first 3 videos
+    const randomVideos = shuffledVideos.slice(0, 4);
+    return res.json({ randomVideos });
+  } catch (err) {
+    return next(err);
+  }
+});
+
 module.exports = router;
