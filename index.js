@@ -37,15 +37,18 @@ app.use((req, res, next) => {
 function sendEmail({ recipient_email, OTP }) {
   return new Promise((resolve, reject) => {
     var transporter = nodemailer.createTransport({
-      service: "gmail",
+      //service: "gmail",
+      host: "smtp.gmail.com",
+      port: 587,
+      secure: false, // true for 465, false for other ports
       auth: {
-        user: MY_EMAIL,
-        pass: MY_PASSWORD,
+        user: "lunasaturni74@gmail.com",
+        pass: "mugq jusl hybq uxto",
       },
     });
 
     const mail_configs = {
-      from: MY_EMAIL,
+      from: "lunasaturni74@gmail.com",
       to: recipient_email,
       subject: "PASSWORD RECOVERY",
       html: `<!DOCTYPE html>
