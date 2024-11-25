@@ -2,17 +2,17 @@
 
 const express = require("express");
 //const axios = require("axios");
-const bcrypt = require("bcrypt");
-const db = require("../db");
+//const bcrypt = require("bcrypt");
+//const db = require("../db");
 const User = require("../models/User");
 //const middleware = require("../middleware");
-const { BCRYPT_WORK_FACTOR } = require("../config");
+//const { BCRYPT_WORK_FACTOR } = require("../config");
 const { createToken } = require("../helpers/tokens");
 
 const { BadRequestError } = require("../expressError");
 
 const router = new express.Router();
-const BASE_URL_WORKOUT = "https://api-workout-sq1f.onrender.com/api/workout";
+//const BASE_URL_WORKOUT = "https://api-workout-sq1f.onrender.com/api/workout";
 
 /** POST /auth/register:   { user } => { token }
  *
@@ -110,5 +110,24 @@ router.post("/token", async function (req, res, next) {
     return next(err);
   }
 });*/
+
+router.patch("/passwordreset", async function (req, res, next) {
+  try {
+    const { email } = req.body;
+    const { password } = req.body;
+    if (!email || !password) {
+      throw new BadRequestError("Email and password required");
+    }
+    const user = await User.updatePassword(email, password);
+    const token = createToken(user);
+    /*const u = await User.getUserByEmail(email);
+    const user = await User.authenticate(u.username, password);
+    const token = createToken(user);
+    return res.json({ token });*/
+    return res.json({ token });
+  } catch (err) {
+    return next(err);
+  }
+});
 
 module.exports = router;

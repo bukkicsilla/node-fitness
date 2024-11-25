@@ -116,6 +116,20 @@ class User {
     return user;
   }
 
+  static async getUserByEmail(email) {
+    const results = await db.query(
+      `SELECT id, username, email, first_name, last_name
+       FROM users
+       WHERE email = $1`,
+      [email]
+    );
+    const user = results.rows[0];
+    if (!user) {
+      throw new NotFoundError("User not found");
+    }
+    return user;
+  }
+
   /** Given a username, return data about user.
    *
    * Returns { username, first_name, last_name, is_admin, jobs }
@@ -198,6 +212,17 @@ class User {
     if (!user) throw new NotFoundError(`No user: ${username}`);
 
     //delete user.password;
+    return user;
+  }
+
+  static async updatePassword(email, password) {
+    const hashedPassword = await bcrypt.hash(password, BCRYPT_WORK_FACTOR);
+    const result = await db.query(
+      `UPDATE users SET password=$1 WHERE email=$2 
+      RETURNING username, email, first_name, last_name`,
+      [hashedPassword, email]
+    );
+    const user = result.rows[0];
     return user;
   }
 }
