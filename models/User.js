@@ -116,20 +116,6 @@ class User {
     return user;
   }
 
-  static async getUserByEmail(email) {
-    const results = await db.query(
-      `SELECT id, username, email, first_name, last_name
-       FROM users
-       WHERE email = $1`,
-      [email]
-    );
-    const user = results.rows[0];
-    if (!user) {
-      throw new NotFoundError("User not found");
-    }
-    return user;
-  }
-
   /** Given a username, return data about user.
    *
    * Returns { username, first_name, last_name, is_admin, jobs }

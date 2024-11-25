@@ -120,10 +120,6 @@ router.patch("/passwordreset", async function (req, res, next) {
     }
     const user = await User.updatePassword(email, password);
     const token = createToken(user);
-    /*const u = await User.getUserByEmail(email);
-    const user = await User.authenticate(u.username, password);
-    const token = createToken(user);
-    return res.json({ token });*/
     return res.json({ token });
   } catch (err) {
     return next(err);
