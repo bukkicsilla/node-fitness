@@ -102,6 +102,7 @@ app.get("/", (req, res) => {
 
 app.post("/send_recovery_email", async (req, res) => {
   try {
+    console.log("Render", req.body);
     const response = await sendEmail(req.body);
     res.send(response.message);
   } catch (error) {
