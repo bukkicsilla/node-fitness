@@ -25,6 +25,11 @@ app.use("/users", usersRoutes);
 app.use("/videos", videosRoutes);
 app.use("/playlists", playlistsRoutes);
 
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  next();
+});
+
 /*app.get("/", (req, res) => {
   res.send("Hello World!");
 });*/
@@ -42,7 +47,7 @@ function sendEmail({ recipient_email, OTP }) {
     const mail_configs = {
       from: MY_EMAIL,
       to: recipient_email,
-      subject: "KODING 101 PASSWORD RECOVERY",
+      subject: "PASSWORD RECOVERY",
       html: `<!DOCTYPE html>
 <html lang="en" >
 <head>
