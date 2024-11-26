@@ -1,4 +1,9 @@
 "use strict";
+/*******
+ * Password reset functionality
+ * https://www.youtube.com/watch?v=A8k4A7TuhDY&t=588s
+ * https://github.com/ksekwamote/password_recovery/tree/master
+ */
 const express = require("express");
 const cors = require("cors");
 const nodemailer = require("nodemailer");
@@ -105,7 +110,6 @@ app.get("/", (req, res) => {
 
 app.post("/send_recovery_email", async (req, res) => {
   try {
-    console.log("Render", req.body);
     const response = await sendEmail(req.body);
     res.send(response.message);
   } catch (error) {
