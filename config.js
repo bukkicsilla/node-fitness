@@ -2,12 +2,9 @@
 require("dotenv").config();
 require("colors");
 
-const SECRET_KEY = process.env.SECRET_KEY || "fitness-secret";
-
-const PORT = +process.env.PORT || 3001;
+const SECRET_KEY = process.env.SECRET_KEY;
+const PORT = +process.env.PORT;
 const FITNESS_DB = "postgresql:/workout_flask";
-/*const FITNESS_DB =
-  "postgresql://postgres.jljzqisclorjmtmwcnog:FlaskW0rk0ut42.@aws-0-us-west-1.pooler.supabase.com:6543/postgres";*/
 
 function getDatabaseUri() {
   return process.env.NODE_ENV === "test"
@@ -20,11 +17,16 @@ function getDatabaseUri() {
 // WJB: Evaluate in 2021 if this should be increased to 13 for non-test use
 const BCRYPT_WORK_FACTOR = process.env.NODE_ENV === "test" ? 1 : 12;
 
+const MY_EMAIL = process.env.MY_EMAIL;
+const MY_PASSWORD = process.env.MY_PASSWORD;
+
 console.log("Jobly Config:".green);
 console.log("SECRET_KEY:".blue, SECRET_KEY);
 console.log("PORT:".blue, PORT.toString());
 console.log("BCRYPT_WORK_FACTOR".yellow, BCRYPT_WORK_FACTOR);
 console.log("Database:".red, getDatabaseUri());
+console.log("MY_EMAIL:".cyan, MY_EMAIL);
+console.log("MY_PASSWORD:".cyan, MY_PASSWORD);
 console.log("---");
 
 module.exports = {
@@ -32,4 +34,6 @@ module.exports = {
   PORT,
   BCRYPT_WORK_FACTOR,
   getDatabaseUri,
+  MY_EMAIL,
+  MY_PASSWORD,
 };
